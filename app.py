@@ -312,7 +312,12 @@ def homepage():
     - logged in: 100 most recent messages of followed_users
     """
 
-    if g.user:
+    if current_user.is_authenticated:
+        # Get the IDs of users the current user is following
+        following_ids = [user.id for user in current_user.following]
+
+        # Include the current user's ID in the list
+        following_ids.append(current_user.id)
         messages = (Message
                     .query
                     .order_by(Message.timestamp.desc())
