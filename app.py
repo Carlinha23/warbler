@@ -7,6 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from forms import UserAddForm, LoginForm, MessageForm, UserProfileForm
 from models import db, connect_db, User, Message
 
+
 CURR_USER_KEY = "curr_user"
 
 app = Flask(__name__)
@@ -312,14 +313,17 @@ def homepage():
     - logged in: 100 most recent messages of followed_users
     """
 
-    if current_user.is_authenticated:
+    #if current_user.is_authenticated:
         # Get the IDs of users the current user is following
-        following_ids = [user.id for user in current_user.following]
+       #following_ids = [user.id for user in current_user.following]
 
         # Include the current user's ID in the list
-        following_ids.append(current_user.id)
+        #following_ids.append(current_user.id)
+    if g.user:
+        following_ids = [user.id for user in g.user.following] + [g.user.id]
         messages = (Message
                     .query
+                    .filter(Message.user_id.in_(following_ids))
                     .order_by(Message.timestamp.desc())
                     .limit(100)
                     .all())
